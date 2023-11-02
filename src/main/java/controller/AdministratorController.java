@@ -49,4 +49,22 @@ public class AdministratorController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
         }
     }
+
+    @GetMapping("/reporte")
+    public ResponseEntity<?> getReport(){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReport());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
+        }
+    }
+
+    @GetMapping("/report_stops")
+    public ResponseEntity<?> getReportWithStops(){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithStops());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
+        }
+    }
 }

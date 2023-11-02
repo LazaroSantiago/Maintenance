@@ -55,4 +55,14 @@ public class AdministratorService implements BaseService<Administrator> {
             throw new Exception(e.getMessage());
         }
     }
+
+    @Transactional
+    public List<ScooterDTO> getReport(){
+
+    }
+
+    @Transactional
+    public List<ScooterDTO> getReportWithStops(){
+
+    }
 }
