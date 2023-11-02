@@ -1,5 +1,6 @@
 package service;
 
+import dto.ScooterDTO;
 import entity.Administrator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,11 +59,11 @@ public class AdministratorService implements BaseService<Administrator> {
 
     @Transactional
     public List<ScooterDTO> getReport(){
-
+        return null;
     }
 
     @Transactional
     public List<ScooterDTO> getReportWithStops(){
-
+        return null;
     }
 }
