@@ -3,6 +3,7 @@ package com.example.maintenance.controller;
 import com.example.maintenance.dto.AuthRequest;
 import com.example.maintenance.entity.Administrator;
 import com.example.maintenance.service.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,21 +27,25 @@ public class AdministratorController {
     private AdministratorService administratorService;
 
     @GetMapping("/test")
+    @Operation(summary = "")
     public String getTest() {
         return "Connection is alive!";
     }
 
     @PostMapping("/test")
+    @Operation(summary = "")
     public String postTest(@RequestParam String name) {
         return "Hello " + name;
     }
 
     @GetMapping("/welcome_admin")
+    @Operation(summary = "")
     public String welcomeAdmin(){
         return "Hello, admin!";
     }
 
     @GetMapping("/all")
+    @Operation(summary = "")
     public ResponseEntity<?> findAll() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.findAll());
@@ -50,6 +55,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.findById(id));
@@ -59,6 +65,7 @@ public class AdministratorController {
     }
 
     @PostMapping("/new")
+    @Operation(summary = "")
     public ResponseEntity<?> save(@RequestBody Administrator entity) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.save(entity));
@@ -68,6 +75,7 @@ public class AdministratorController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.delete(id));
@@ -77,6 +85,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/reporte")
+    @Operation(summary = "")
     public ResponseEntity<?> getReport(){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReport());
@@ -86,6 +95,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/report_stops")
+    @Operation(summary = "")
     public ResponseEntity<?> getReportWithStops(){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithStops());
@@ -95,6 +105,7 @@ public class AdministratorController {
     }
 
     @PostMapping("/authenticate")
+    @Operation(summary = "")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated())
