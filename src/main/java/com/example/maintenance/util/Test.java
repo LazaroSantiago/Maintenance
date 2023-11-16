@@ -1,9 +1,9 @@
-package util;
+package com.example.maintenance.util;
 
-import entity.Administrator;
+import com.example.maintenance.entity.Administrator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import controller.AdministratorController;
+import com.example.maintenance.controller.AdministratorController;
 
 @Component
 public class Test {

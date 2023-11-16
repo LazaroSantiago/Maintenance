@@ -1,24 +1,20 @@
-package entity;
+package com.example.maintenance.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Administrator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column
     private String name;
-
-    public Administrator() {
-
-    }
-
-    public Administrator(Long id){
-        this.id = id;
-    }
+    private String password;
+    private String roles;
 
 }

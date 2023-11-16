@@ -1,4 +1,4 @@
-package service;
+package com.example.maintenance.service;
 
 import java.util.List;
 
