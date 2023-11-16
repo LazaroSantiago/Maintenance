@@ -1,11 +1,12 @@
-package service;
+package com.example.maintenance.service;
 
-import dto.ScooterDTO;
-import entity.Administrator;
+import com.example.maintenance.repository.AdministratorRepository;
+import com.example.maintenance.dto.ScooterDTO;
+import com.example.maintenance.entity.Administrator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import repository.AdministratorRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,19 +14,22 @@ import java.util.Optional;
 @Service("AdministratorService")
 public class AdministratorService implements BaseService<Administrator> {
     @Autowired
-    private AdministratorRepository administratorRepository;
+    private AdministratorRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public List<Administrator> findAll() {
-        return administratorRepository.findAll();
+        return repository.findAll();
     }
 
     @Override
     @Transactional
     public Administrator findById(Long id) throws Exception {
         try{
-            Optional<Administrator> result = administratorRepository.findById(id);
+            Optional<Administrator> result = repository.findById(id);
             return result.get();
         }catch (Exception e){
             throw new Exception(e.getMessage());
@@ -36,8 +40,8 @@ public class AdministratorService implements BaseService<Administrator> {
     @Transactional
     public boolean delete(Long id) throws Exception {
         try {
-            if (administratorRepository.existsById(id)) {
-                administratorRepository.deleteById(id);
+            if (repository.existsById(id)) {
+                repository.deleteById(id);
                 return true;
             } else {
                 throw new Exception();
@@ -51,7 +55,8 @@ public class AdministratorService implements BaseService<Administrator> {
     @Transactional
     public Administrator save(Administrator entity) throws Exception {
         try {
-            return this.administratorRepository.save(entity);
+            entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+            return this.repository.save(entity);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

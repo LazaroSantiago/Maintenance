@@ -1,20 +1,46 @@
-package controller;
+package com.example.maintenance.controller;
 
-import entity.Administrator;
+import com.example.maintenance.dto.AuthRequest;
+import com.example.maintenance.entity.Administrator;
+import com.example.maintenance.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import service.AdministratorService;
+import com.example.maintenance.service.AdministratorService;
 
-@Controller("AdministratorController")
+@RestController("AdministratorController")
 @RequestMapping("/admin")
 public class AdministratorController {
     @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
     private AdministratorService administratorService;
 
-    @GetMapping("")
+    @GetMapping("/test")
+    public String getTest() {
+        return "Connection is alive!";
+    }
+
+    @PostMapping("/test")
+    public String postTest(@RequestParam String name) {
+        return "Hello " + name;
+    }
+
+    @GetMapping("/welcome_admin")
+    public String welcomeAdmin(){
+        return "Hello, admin!";
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<?> findAll() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.findAll());
@@ -32,7 +58,7 @@ public class AdministratorController {
         }
     }
 
-    @PostMapping("")
+    @PostMapping("/new")
     public ResponseEntity<?> save(@RequestBody Administrator entity) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.save(entity));
@@ -67,4 +93,15 @@ public class AdministratorController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
         }
     }
+
+    @PostMapping("/authenticate")
+    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        if (authentication.isAuthenticated())
+            return jwtService.generateToken(authRequest.getUsername());
+
+        throw new BadCredentialsException("user not found");
+    }
+
+
 }
