@@ -1,7 +1,12 @@
 package com.example.maintenance;
 
+import com.example.maintenance.controller.AdministratorController;
+import com.example.maintenance.dto.AuthRequest;
+import com.example.maintenance.entity.Administrator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import jakarta.annotation.Priority;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,65 +19,76 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 
-/** Todo
- * Antes de testear se recomienda comentar el
- * "@GeneratedValue(strategy = GenerationType.IDENTITY)" ubicado en la clase Administrator
- * y que el id a usar no este en uso
- */
-
 @SpringBootTest(classes = MaintenanceApplication.class)
 class MaintenanceTests {
-
-    public final HttpClient client =  HttpClientBuilder.create().build();
-
+    public final HttpClient client = HttpClientBuilder.create().build();
     private final String BASE_URL = "http://localhost:8081/admin";
-    private final int id = 1;
+    private final String user = "user1";
+    private final String password = "password";
+
+    @Autowired
+    AdministratorController administratorController;
 
     @Test
     @Priority(1)
     public void saveTest() throws IOException {
-        int initialCount = countElementsInJson(this.findAll());
-
-        HttpPost request = new HttpPost(this.BASE_URL);
-
-        String jsonBody = "{\n" +
-                "  \"id\": "+ id +",\n" +
-                "  \"name\": \"Nombre del Administrador\"\n" +
-                "}";
+        HttpPost request = new HttpPost(this.BASE_URL + "/new");
+        String jsonBody = "{\"name\": \"user\", \"password\": \"password\", \"roles\": \"ROLE_ADMIN\"}";
 
         request.setEntity(new StringEntity(jsonBody, ContentType.APPLICATION_JSON));
 
         HttpResponse response = client.execute(request);
+        String resultContent = getResultContent(response);
 
         System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
-        String resultContent = getResultContent(response);
+
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(resultContent, JsonObject.class);
+        int id = jsonObject.get("id").getAsInt();
+        System.out.println("ID: " + id);
         System.out.println("Response Content : " + resultContent);
-
-        int finalCount = countElementsInJson(this.findAll());
-
-        Assert.assertEquals(initialCount + 1, finalCount);
     }
 
     @Test
     @Priority(2)
     public void deleteTest() throws IOException {
-        int initialCount = countElementsInJson(this.findAll());
+        int id = getId();
 
+        AuthRequest authRequest = new AuthRequest(user, password);
+        String token = administratorController.authenticateAndGetToken(authRequest);
+        System.out.println("id: " + id);
         HttpDelete request = new HttpDelete(this.BASE_URL + "/" + id);
-
+        request.addHeader("Authorization", "Bearer " + token);
         HttpResponse response = client.execute(request);
 
         System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
         String resultContent = getResultContent(response);
+        boolean deleteResponse = Boolean.parseBoolean(resultContent);
         System.out.println("Response Content : " + resultContent);
 
-        int finalCount = countElementsInJson(this.findAll());
+        Assert.assertEquals(true, deleteResponse);
+    }
 
-        Assert.assertEquals(initialCount - 1, finalCount);
+    private int getId() throws IOException {
+        HttpPost request = new HttpPost(this.BASE_URL + "/new");
+        String jsonBody = "{\"name\": \"user1\", \"password\": \"password\", \"roles\": \"ROLE_ADMIN\"}";
+
+        request.setEntity(new StringEntity(jsonBody, ContentType.APPLICATION_JSON));
+
+        HttpResponse response = client.execute(request);
+        String resultContent = getResultContent(response);
+
+        System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
+
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(resultContent, JsonObject.class);
+        int id = jsonObject.get("id").getAsInt();
+        return id;
     }
 
     private String getResultContent(HttpResponse response) throws IOException {
@@ -85,27 +101,4 @@ class MaintenanceTests {
         }
     }
 
-    private String findAll() throws IOException {
-        HttpGet request = new HttpGet(this.BASE_URL);
-
-        HttpResponse response = client.execute(request);
-
-        return getResultContent(response);
-    }
-
-    private int countElementsInJson(String jsonString) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(jsonString);
-
-            if (jsonNode.isArray()) {
-                return jsonNode.size();
-            } else {
-                return -1;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
 }

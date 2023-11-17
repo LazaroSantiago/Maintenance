@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-//@ComponentScan("com.example.maintenance")
 public class MaintenanceApplication {
 
     public static void main(String[] args) {
