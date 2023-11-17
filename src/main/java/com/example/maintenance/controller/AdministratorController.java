@@ -82,7 +82,7 @@ public class AdministratorController {
     @Operation(summary = "")
     public ResponseEntity<?> getReport(){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReport());
+            return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithoutStops());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
         }
