@@ -1,11 +1,10 @@
 package com.example.maintenance.service;
 
-import com.example.maintenance.repository.AdministratorRepository;
 import com.example.maintenance.dto.ScooterDTO;
+import com.example.maintenance.repository.AdministratorRepository;
 import com.example.maintenance.entity.Administrator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,10 +25,6 @@ public class AdministratorService implements BaseService<Administrator> {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 
     @Override
     @Transactional

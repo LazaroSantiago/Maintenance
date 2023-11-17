@@ -2,6 +2,7 @@ package com.example.maintenance.controller;
 
 import com.example.maintenance.dto.AuthRequest;
 import com.example.maintenance.entity.Administrator;
+import com.example.maintenance.service.AdministratorService;
 import com.example.maintenance.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,11 +12,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.example.maintenance.service.AdministratorService;
 
 @RestController("AdministratorController")
 @RequestMapping("/admin")
 public class AdministratorController {
+
+
     @Autowired
     private JwtService jwtService;
 
@@ -36,7 +38,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/welcome_admin")
-    public String welcomeAdmin(){
+    public String welcomeAdmin() {
         return "Hello, admin!";
     }
 
@@ -77,16 +79,16 @@ public class AdministratorController {
     }
 
     @GetMapping("/reporte")
-    public ResponseEntity<?> getReport(){
+    public ResponseEntity<?> getReport() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReport());
+            return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithoutStops());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
         }
     }
 
     @GetMapping("/report_stops")
-    public ResponseEntity<?> getReportWithStops(){
+    public ResponseEntity<?> getReportWithStops() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithStops());
         } catch (Exception e) {
@@ -95,13 +97,12 @@ public class AdministratorController {
     }
 
     @PostMapping("/authenticate")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest){
+    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated())
             return jwtService.generateToken(authRequest.getUsername());
 
         throw new BadCredentialsException("user not found");
     }
-
 
 }
