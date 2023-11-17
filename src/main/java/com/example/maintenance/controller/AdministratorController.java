@@ -2,8 +2,8 @@ package com.example.maintenance.controller;
 
 import com.example.maintenance.dto.AuthRequest;
 import com.example.maintenance.entity.Administrator;
-import com.example.maintenance.service.AdministratorService;
 import com.example.maintenance.service.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +12,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.example.maintenance.service.AdministratorService;
 
 @RestController("AdministratorController")
 @RequestMapping("/admin")
 public class AdministratorController {
-
-
     @Autowired
     private JwtService jwtService;
 
@@ -38,6 +37,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/welcome_admin")
+    @Operation(summary = "")
     public String welcomeAdmin() {
         return "Hello, admin!";
     }
@@ -79,15 +79,17 @@ public class AdministratorController {
     }
 
     @GetMapping("/reporte")
-    public ResponseEntity<?> getReport() {
+    @Operation(summary = "")
+    public ResponseEntity<?> getReport(){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithoutStops());
+            return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReport());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
         }
     }
 
     @GetMapping("/report_stops")
+    @Operation(summary = "")
     public ResponseEntity<?> getReportWithStops() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithStops());
@@ -97,6 +99,7 @@ public class AdministratorController {
     }
 
     @PostMapping("/authenticate")
+    @Operation(summary = "")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated())
@@ -104,5 +107,6 @@ public class AdministratorController {
 
         throw new BadCredentialsException("user not found");
     }
+
 
 }
