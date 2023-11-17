@@ -5,19 +5,31 @@ import com.example.maintenance.dto.ScooterDTO;
 import com.example.maintenance.entity.Administrator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Service("AdministratorService")
 public class AdministratorService implements BaseService<Administrator> {
     @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
     private AdministratorRepository repository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
     @Override
     @Transactional
@@ -28,10 +40,10 @@ public class AdministratorService implements BaseService<Administrator> {
     @Override
     @Transactional
     public Administrator findById(Long id) throws Exception {
-        try{
+        try {
             Optional<Administrator> result = repository.findById(id);
             return result.get();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
@@ -63,12 +75,27 @@ public class AdministratorService implements BaseService<Administrator> {
     }
 
     @Transactional
-    public List<ScooterDTO> getReport(){
-        return null;
+    public List<ScooterDTO> getReportWithoutStops() throws Exception {
+        String url = "http://localhost:8082/scooter/report/stopYes";
+        return getScooterDTOs(url);
     }
 
     @Transactional
-    public List<ScooterDTO> getReportWithStops(){
-        return null;
+    public List<ScooterDTO> getReportWithStops() throws Exception {
+        String url = "http://localhost:8082/scooter/report/stopNo";
+        return getScooterDTOs(url);
     }
+
+    private List<ScooterDTO> getScooterDTOs(String url) throws Exception {
+        ResponseEntity<ScooterDTO[]> responseEntity = restTemplate.getForEntity(url, ScooterDTO[].class);
+
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            ScooterDTO[] scooterArray = responseEntity.getBody();
+            assert scooterArray != null;
+            return Arrays.asList(scooterArray);
+        } else {
+            throw new Exception("Error al obtener datos del microservicio.");
+        }
+    }
+
 }
