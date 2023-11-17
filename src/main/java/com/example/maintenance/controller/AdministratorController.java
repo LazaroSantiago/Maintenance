@@ -37,7 +37,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/welcome_admin")
-    @Operation(summary = "")
+    @Operation(summary = "Se usa para testear que la autenticacion con JWT funcione.")
     public String welcomeAdmin() {
         return "Hello, admin!";
     }
@@ -79,7 +79,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/reporte")
-    @Operation(summary = "")
+    @Operation(summary = "Genera un reporte de uso de monopatines por tiempo sin pausas")
     public ResponseEntity<?> getReport(){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithoutStops());
@@ -89,7 +89,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/report_stops")
-    @Operation(summary = "")
+    @Operation(summary = "Genera un reporte de uso de monopatines por tiempo con pausas")
     public ResponseEntity<?> getReportWithStops() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(administratorService.getReportWithStops());
@@ -99,7 +99,7 @@ public class AdministratorController {
     }
 
     @PostMapping("/authenticate")
-    @Operation(summary = "")
+    @Operation(summary = "Autentica un usuario y retorna un token JWT")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated())
